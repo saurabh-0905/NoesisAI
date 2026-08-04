@@ -229,10 +229,10 @@ Issues and PRs are welcome. If you're proposing a change to the pipeline itself 
 
 ## 📄 License
 
-MIT — do whatever you'd like with it, just don't hold me responsible if your critic node gives itself a 10/10 on the first try.
+This project is licensed under the MIT License — feel free to use, modify, and distribute.
 
 ---
 
 <div align="center">
-Built by <a href="https://github.com/<your-username>">Saurabh</a> — feedback and stars appreciated ⭐
+Feedback and stars appreciated ⭐
 </div>
