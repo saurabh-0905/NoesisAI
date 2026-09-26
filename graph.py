@@ -1,21 +1,11 @@
 # graph.py
-# ------------------------------------------------------------------
 # This is the brain of Noesis AI - the actual research pipeline.
-#
 # Flow (5 steps):
-#   1. gather_context   -> check our own documents first, use web search
-#                          only to fill in the gaps
-#   2. write_draft       -> write a structured report from that context
-#   3. critique_draft    -> an LLM grades its own report out of 10
-#   4. refine_draft       -> if the grade is too low, rewrite the report
-#                          using the critic's feedback (loops back to
-#                          critique, up to a max number of times)
-#   5. verify_claims      -> pull out the key factual claims and check
-#                          each one against real sources
-#
-# Everything is stored in one shared "state" dictionary that gets
-# passed from node to node.
-# ------------------------------------------------------------------
+#   1. gather_context
+#   2. write_draft   
+#   3. critique_draft    
+#   4. refine_draft      
+#   5. verify_claims     
 
 import os
 from typing import TypedDict, List, Dict
@@ -34,10 +24,8 @@ llm = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
 )
 
-
-# ------------------------------------------------------------------
 # Shared state - every node reads from / writes to this
-# ------------------------------------------------------------------
+
 class ResearchState(TypedDict):
     topic: str
     use_local: bool           # NEW: whether to check ChromaDB at all this run
@@ -57,9 +45,7 @@ class ResearchState(TypedDict):
     log: List[str]            # human-readable trail shown in the UI
 
 
-# ------------------------------------------------------------------
 # Node 1: gather_context
-# ------------------------------------------------------------------
 def gather_context(state: ResearchState) -> ResearchState:
     topic = state["topic"]
     log = state.get("log", [])
@@ -82,7 +68,7 @@ def gather_context(state: ResearchState) -> ResearchState:
     elif state.get("use_local", True):
         log.append("No relevant local knowledge found.")
 
-    # Fall back to (or supplement with) the web if local knowledge is
+    # Fall back to the web if local knowledge is
     # missing or looks thin (fewer than 2 chunks).
     if len(local_chunks) < 2:
         log.append("Searching the web for more information...")
@@ -101,10 +87,7 @@ def gather_context(state: ResearchState) -> ResearchState:
         "log": log,
     }
 
-
-# ------------------------------------------------------------------
 # Node 2: write_draft
-# ------------------------------------------------------------------
 def write_draft(state: ResearchState) -> ResearchState:
     log = state.get("log", [])
     log.append("Writing draft report...")
@@ -122,10 +105,7 @@ Information:
     response = llm.invoke(prompt)
     return {**state, "draft": response.content, "log": log}
 
-
-# ------------------------------------------------------------------
 # Node 3: critique_draft
-# ------------------------------------------------------------------
 def critique_draft(state: ResearchState) -> ResearchState:
     log = state.get("log", [])
     log.append(f"Critiquing draft (attempt {state['iteration'] + 1})...")
@@ -162,11 +142,9 @@ FEEDBACK: <one short paragraph of specific, actionable feedback>
         "log": log,
     }
 
-
-# ------------------------------------------------------------------
 # Node 4: refine_draft
 # (only runs if the critique score was too low)
-# ------------------------------------------------------------------
+
 def refine_draft(state: ResearchState) -> ResearchState:
     log = state.get("log", [])
     log.append("Score too low - rewriting report based on feedback...")
@@ -198,12 +176,10 @@ def should_refine(state: ResearchState) -> str:
     out_of_tries = state["iteration"] >= config.MAX_REFINE_ITERATIONS
     return "verify" if (good_enough or out_of_tries) else "refine"
 
-
-# ------------------------------------------------------------------
 # Node 5: verify_claims
 # (extraction + verification combined into ONE node, on purpose -
 # keeps the pipeline simple instead of splitting into two agents)
-# ------------------------------------------------------------------
+
 def verify_claims(state: ResearchState) -> ResearchState:
     log = state.get("log", [])
     log.append("Extracting key claims to fact-check...")
