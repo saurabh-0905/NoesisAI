@@ -1,12 +1,8 @@
 # ingest.py
-# ------------------------------------------------------------------
-# Run this file whenever you want to teach Noesis AI new documents.
+# Run this file whenever to teach Noesis AI new documents.
 # It reads every file in the "documents/" folder, breaks each one
 # into small overlapping chunks, and stores those chunks in ChromaDB
 # so the research agent can find them later.
-#
-# Usage:  python ingest.py
-# ------------------------------------------------------------------
 
 import os
 from pypdf import PdfReader
