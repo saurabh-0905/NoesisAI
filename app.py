@@ -1,15 +1,5 @@
 # app.py
-# ------------------------------------------------------------------
 # Single-page Streamlit frontend for Noesis AI.
-# Visual style matches the "technical blueprint / spec sheet" theme:
-# paper + graph-paper grid background, JetBrains Mono for headings/
-# labels, Source Serif for body text, ink + blue accent, dashed
-# spec-sheet borders. No purple gradients, no glass blur.
-#
-# Live progress uses st.status() + graph.stream_research(), so the
-# user sees each pipeline step as it actually happens instead of a
-# frozen screen until the very end.
-# ------------------------------------------------------------------
 
 import streamlit as st
 
@@ -19,16 +9,6 @@ import config
 
 st.set_page_config(page_title="Noesis AI", page_icon="🧠", layout="centered")
 
-# ------------------------------------------------------------------
-# Fonts + theme CSS
-#
-# IMPORTANT: Streamlit's markdown renderer treats <style>...</style>
-# as raw HTML only until the FIRST BLANK LINE inside it - after that
-# it switches back to normal markdown parsing and prints the rest of
-# the CSS as literal visible text on the page. So this CSS string
-# must not contain any blank lines. We build it with blank lines for
-# readability below, then strip them out right before rendering.
-# ------------------------------------------------------------------
 _THEME_CSS = """
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -156,9 +136,7 @@ div[data-testid="stStatusWidget"], div[data-testid="stExpander"]{
 _THEME_CSS = "\n".join(line for line in _THEME_CSS.splitlines() if line.strip() != "")
 st.markdown(_THEME_CSS, unsafe_allow_html=True)
 
-# ------------------------------------------------------------------
 # Header
-# ------------------------------------------------------------------
 st.markdown('<div class="eyebrow">Self-Critiquing Research Agent</div>', unsafe_allow_html=True)
 st.markdown('<h1 class="headline">Noesis <span class="u">AI</span></h1>', unsafe_allow_html=True)
 st.markdown(
@@ -168,9 +146,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ------------------------------------------------------------------
 # Sidebar: knowledge base status + settings, shown as spec sheets
-# ------------------------------------------------------------------
 with st.sidebar:
     st.markdown('<div class="eyebrow">Knowledge Base</div>', unsafe_allow_html=True)
     try:
@@ -211,9 +187,7 @@ with st.container(border=True):
                              help="Turn off to force web-only research, ignoring any uploaded documents.")
     run_clicked = st.button("🔍  Start Research")
 
-# ------------------------------------------------------------------
 # Run pipeline with LIVE streaming progress
-# ------------------------------------------------------------------
 if run_clicked:
     if not topic.strip():
         st.warning("Please enter a topic first.")
