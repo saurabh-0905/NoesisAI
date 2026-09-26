@@ -1,11 +1,7 @@
 # tools.py
-# ------------------------------------------------------------------
 # This file has two simple jobs:
 #   1. Look something up in OUR OWN uploaded documents (ChromaDB)
 #   2. Look something up on the LIVE WEB (Tavily)
-# Every other file just calls these two functions - they don't need
-# to know HOW the lookup happens.
-# ------------------------------------------------------------------
 
 import os
 import chromadb
@@ -27,7 +23,7 @@ def get_chroma_collection():
     client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH)
 
     # This turns text into embeddings automatically using a model
-    # that runs on your own machine (no API call, no cost).
+    # that runs on your own machine (no API call).
     embed_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
         model_name=config.EMBEDDING_MODEL
     )
